@@ -5,7 +5,7 @@ import { User } from "../models/user.js";
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = User.findOne({ email: email });
+    const user = await User.findOne({ email: email });
     if (!user) {
       return res.status(404).json({ message: "User does not exist" });
     }
@@ -21,12 +21,14 @@ export const login = async (req, res) => {
 
     const { password: _, ...userWithoutPassword } = user.toObject();
     res.status(200).json({
+      success: true,
       message: "Login successful",
       token,
       user: userWithoutPassword,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+    // console.log(error.message)
   }
 };
 
@@ -59,6 +61,7 @@ export const register = async (req, res) => {
     });
     const savedUser = await newUser.save();
     res.status(201).json({
+      success: true,
       message: "User successfully created",
       user: savedUser,
     });

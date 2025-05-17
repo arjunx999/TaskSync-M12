@@ -1,7 +1,7 @@
 import express from "express";
-import { createGroup, addMember, deleteGroup, removeMember } from "../controllers/groupController";
-import { verifyToken } from "../middleware/auth";
-import { upload } from "../middleware/multer";
+import { createGroup, addMember, deleteGroup, removeMember } from "../controllers/groupController.js";
+import { verifyToken } from "../middleware/auth.js";
+import { upload } from "../middleware/multer.js";
 
 const router = express.Router();
 

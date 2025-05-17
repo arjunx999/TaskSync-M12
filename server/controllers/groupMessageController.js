@@ -1,4 +1,4 @@
-import { GroupMessage } from "../models/groupMessage.js";
+import { GroupMessage } from "../models/group_message.js";
 
 export const sendGroupMessage = async (req, res) => {
   try {

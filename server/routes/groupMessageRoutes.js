@@ -2,7 +2,7 @@ import express from "express";
 import {
   sendGroupMessage,
   getGroupMessages,
-} from "../controllers/grouptMessageController.js";
+} from "../controllers/groupMessageController.js";
 import { verifyToken } from "../middleware/auth.js";
 import { upload } from "../middleware/multer.js";
 

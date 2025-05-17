@@ -1,4 +1,4 @@
-import { Message } from "../models/message.js";
+import { DirectMessage } from "../models/direct_message.js";
 
 // Send a message
 export const sendDirectMessage = async (req, res) => {
@@ -7,7 +7,7 @@ export const sendDirectMessage = async (req, res) => {
     const sender = req.user.id;
     const file = req.file;
 
-    const newMessage = new Message({
+    const newMessage = new DirectMessage({
       sender,
       receiver,
       content: content || "",
@@ -27,7 +27,7 @@ export const getDirectMessages = async (req, res) => {
     const userId = req.user.id;
     const { otherUserId } = req.params;
 
-    const messages = await Message.find({
+    const messages = await DirectMessage.find({
       $or: [
         { sender: userId, receiver: otherUserId },
         { sender: otherUserId, receiver: userId },
