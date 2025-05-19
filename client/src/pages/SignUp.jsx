@@ -7,7 +7,7 @@ import { useState } from "react";
 const SignUp = () => {
   const Navigate = useNavigate();
   const headTohome = () => {
-    Navigate(-1);
+    Navigate("/");
   };
   const [fileName, setFileName] = useState("Upload Profile Picture");
 

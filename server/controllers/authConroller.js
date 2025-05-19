@@ -49,7 +49,7 @@ export const register = async (req, res) => {
 
     let profilePicPath = "";
     if (req.file) {
-      profilePicPath = req.file.path;
+      profilePicPath = req.file.path.replace(/\\/g, "/");
     }
 
     const newUser = new User({

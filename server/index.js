@@ -12,6 +12,8 @@ import groupRoutes from "./routes/groupRoutes.js";
 import { connectDB } from "./config/db.js";
 import { DirectMessage } from "./models/direct_message.js";
 import { GroupMessage } from "./models/group_message.js";
+import path from "path";
+import { fileURLToPath } from "url"
 
 dotenv.config();
 
@@ -34,6 +36,10 @@ app.get("/demo", (req, res) => {
   res.send("hello hello");
 });
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 app.use("/users", userRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/directMessages", directMessageRoutes);

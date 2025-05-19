@@ -8,7 +8,7 @@ import { useAppContext } from "../context/UserContext";
 const LogIn = () => {
   const Navigate = useNavigate();
   const headTohome = () => {
-    Navigate(-1);
+    Navigate("/");
   };
 
   const { setUser } = useAppContext();
@@ -101,7 +101,7 @@ const LogIn = () => {
                 type="password"
                 placeholder="password"
                 required
-                className="w-[100%] h-[6vh] rounded-xl p-2 border-[1.4px] border-zinc-800 bg-zinc-100 font-fredoka"
+                className="w-[100%] h-[6vh] rounded-xl p-2 border-[1.4px] border-zinc-800 bg-zinc-100 font-['Fredoka']"
                 name="password"
                 onChange={handleInputChange}
               />
