@@ -20,8 +20,8 @@ const ChatHome = () => {
       }, 500);
     }
 
-    if(user?._id) {
-      socket.emit("join", user)
+    if (user?._id) {
+      socket.emit("join", user);
     }
     // console.log(user.profilePic)
 
@@ -62,6 +62,25 @@ const ChatHome = () => {
 
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [ShowPfp, setShowPfp] = useState(false);
+
+  const [recentChats, setRecentChats] = useState([]);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    const fetchRecentChats = async () => {
+      const res = await axios.get(
+        `http://localhost:9999/users/getConversations/${user._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setRecentChats(res.data);
+      console.log(res.data);
+    };
+    const interval = setInterval(fetchRecentChats, 2000);
+    fetchRecentChats();
+    return () => clearInterval(interval);
+  }, [selectedUser, user]);
 
   return (
     <div className="w-[100vw] h-[100vh] flex overflow-hidden bg-[#F5F7FA]">
@@ -124,7 +143,12 @@ const ChatHome = () => {
             onClick={() => setViewUsers((prev) => !prev)}
           />
           {viewUsers && (
-            <div className="absolute w-full rounded-b-lg h-auto bg-zinc-100 max-h-[30vh] z-10 overflow-y-scroll flex flex-col top-[7vh] shadow-lg border border-b-zinc-400 font-['Fredoka'] border-l-zinc-400 border-r-zinc-400 ">
+            <div
+              className="absolute w-full rounded-b-lg h-auto bg-zinc-100 max-h-[30vh] z-10 overflow-y-scroll flex flex-col top-[7vh] shadow-lg border border-b-zinc-400 font-['Fredoka'] border-l-zinc-400 border-r-zinc-400 [scrollbar-width:none] 
+                [-ms-overflow-style:none] 
+                [&::-webkit-scrollbar]:w-0 
+                [&::-webkit-scrollbar]:bg-transparent"
+            >
               {filteredUsers.map((u) => (
                 <div
                   key={u._id}
@@ -133,7 +157,7 @@ const ChatHome = () => {
                     setSelectedUser(u), setViewUsers(false);
                   }}
                 >
-                  <div className="w-full px-4 py-2 hover:bg-zinc-300 cursor-pointer flex items-center gap-2">
+                  <div className="w-full px-6 py-2 hover:bg-zinc-300 cursor-pointer flex items-center gap-3">
                     <img
                       src={`${serverUrl}/${u.profilePic}`}
                       alt={u.username}
@@ -164,8 +188,38 @@ const ChatHome = () => {
             </span>
           </div>
         </div>
-        <div className="w-full h-[83%] bg--400 border-t-[0.1rem] overflow-x-hidden overflow-y-scroll"></div>
-
+        <div
+          className="w-full h-[83%] bg--400 border-t-[0.1rem] overflow-x-hidden overflow-y-scroll font-['Fredoka'] [scrollbar-width:none] 
+                [-ms-overflow-style:none] 
+                [&::-webkit-scrollbar]:w-0 
+                [&::-webkit-scrollbar]:bg-transparent"
+        >
+          {recentChats.map((chat, index) => {
+            return (
+              <div key={index}>
+                <div
+                  className="w-full h-[12%] select-none bg-zinc-100 flex gap-x-4 items-center justify-center hover:bg-zinc-300 cursor-pointer"
+                  onClick={() => setSelectedUser(chat)}
+                >
+                  <div className="w-[3.6vw] overflow-hidden h-[3.6vw] bg-blue-200 rounded-full">
+                    <img
+                      className="w-full h-full"
+                      src={`${serverUrl}/${chat.profilePic}`}
+                      alt=""
+                    />
+                  </div>
+                  <div className="w-[70%] flex h-full flex-col py-2">
+                    <h2 className="text-lg font-medium">{chat.name}</h2>
+                    <h3 className="-mt-1 text-sm text-gray-600 font-medium">
+                      {chat.email}
+                    </h3>
+                  </div>
+                </div>
+                <div className="w-[95%] h-[0.9px] mx-auto bg-zinc-900"></div>
+              </div>
+            );
+          })}
+        </div>
         {showUserDetails && (
           <div className="w-full h-full bg-[#F5F7FA] border-r-[0.1rem] absolute py-[11vh] top-0 left-0 z-20">
             <div className="w-[16vw] h-[16vw] bg-zinc-300 border-[0.17rem] rounded-full mx-auto overflow-hidden">

@@ -122,7 +122,12 @@ const ChatBox = ({ selectedUser, user }) => {
       </div>
 
       {/* ------------------- Messages section ------------------- */}
-      <div className="w-full h-[81%] bg-zinc-100 px-5 py-3 overflow-x-hidden overflow-y-scroll">
+      <div
+        className="w-full h-[81%] bg-zinc-100 px-5 py-3 overflow-x-hidden overflow-y-scroll [scrollbar-width:none] 
+                [-ms-overflow-style:none] 
+                [&::-webkit-scrollbar]:w-0 
+                [&::-webkit-scrollbar]:bg-transparent"
+      >
         {messages.map((msg, index) => {
           const isSender = msg.sender === user._id;
           return (

@@ -1,4 +1,5 @@
 import { User } from "../models/user.js";
+import { DirectMessage } from "../models/direct_message.js";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -23,9 +24,9 @@ export const getUserConversations = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const messages = await Message.find({
+    const messages = await DirectMessage.find({
       $or: [{ sender: userId }, { receiver: userId }],
-    }).populate("sender receiver", "username email");
+    }).populate("sender receiver", "name email profilePic");
 
     // Extract unique user IDs
     const userMap = new Map();
