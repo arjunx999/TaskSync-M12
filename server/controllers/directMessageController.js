@@ -3,15 +3,15 @@ import { DirectMessage } from "../models/direct_message.js";
 // Send a message
 export const sendDirectMessage = async (req, res) => {
   try {
-    const { content, receiver } = req.body;
-    const sender = req.user.id;
-    const file = req.file;
+    const { content, receiverId, attachment, senderId } = req.body;
+    // const sender = req.user.id;
+    // const file = req.file;
 
     const newMessage = new DirectMessage({
-      sender,
-      receiver,
+      sender: senderId,
+      receiver: receiverId,
       content: content || "",
-      attachment: file ? file.path : null,
+      attachment: attachment ? attachment.path : null,
     });
 
     const savedMessage = await newMessage.save();

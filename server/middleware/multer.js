@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     if (file.fieldname === "profilePic") {
       cb(null, "uploads/profilePictures");
-    } else if (file.fieldname === "messageFile") {
+    } else if (file.fieldname === "attachment") {
       cb(null, "uploads/messages");
     } else {
       cb(null, "uploads/others");
@@ -27,7 +27,7 @@ const fileFilter = (req, file, cb) => {
     } else {
       cb(null, false);
     }
-  } else if (file.fieldname === "messageFile") {
+  } else if (file.fieldname === "attachment") {
     cb(null, true);
   } else {
     cb(new Error("Unsupported field."), false);

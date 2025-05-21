@@ -71,13 +71,17 @@ io.on("connection", (socket) => {
   });
 
   // DIRECT MESSAGE
-  socket.on("send-message", async ({ senderId, receiverId, content }) => {
+  socket.on("send-message", async ({ senderId, receiverId, content, attachment }) => {
     try {
-      const newMessage = new DirectMessage({
+      const messageData = {
         sender: senderId,
         receiver: receiverId,
         content,
-      });
+      }
+      if (attachment) {
+        messageData.attachment = attachment;
+      }
+      const newMessage = new DirectMessage(messageData);
       await newMessage.save();
 
       // Emit if receiver is online

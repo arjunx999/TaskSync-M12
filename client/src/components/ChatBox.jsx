@@ -81,6 +81,41 @@ const ChatBox = ({ selectedUser, user }) => {
     scrollToBottom();
   }, [messages]);
 
+  // const [file, setFile] = useState(null);
+
+  // const handleFileChange = async (e) => {
+  //   const newFile = e.target.files[0];
+  //   setFile(newFile);
+  //   const formData = new FormData();
+  //   formData.append("senderId", user._id);
+  //   formData.append("receiverId", selectedUser._id);
+  //   formData.append("content", text);
+  //   formData.append("attachment", newFile);
+  //   const token = sessionStorage.getItem("token")
+  //   try {
+  //     const res = await axios.post(
+  //         "http://localhost:9999/directMessages/send",
+  //         formData,
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //       if(res.status == 201) {
+  //         console.log("attachment uploaded")
+  //         setMessages((prev) => [...prev, res.data]);
+  //         socket.emit("send-message", {
+  //           ...res.data,
+  //         });
+  //       } else {
+  //         console.log("error in attachment upload")
+  //       }
+
+  //   } catch (error) {
+  //     console.error("File upload failed:", error);
+
+  //   }
+  // }
+
   return (
     <div className="w-full h-full bg-[#F5F7FA] relative flex flex-col font-['Fredoka']">
       <div className="w-full h-[10%] bg- border-b-[0.1rem] flex items-center justify-between gap-[1vw] text-xl font-semibold px-[2vw] select-none">
@@ -167,7 +202,12 @@ const ChatBox = ({ selectedUser, user }) => {
         >
           <div className="relative group inline-block">
             <i className="ri-attachment-2 border-[1.4px] text-xl px-3 py-[0.52rem] rounded-xl bg--300 cursor-pointer"></i>
-
+            {/* <input
+              type="file"
+              id="fileUpload"
+              onChange={handleFileChange}
+              className="absolute -top-1.5 left-0 rounded-xl w-full h-full bg-pink-900 py-5 opacity-0 cursor-pointer"
+            /> */}
             <span className="absolute left-1.5 -translate-x-1/2 -translate-y-9 mt-1.5 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
               Add Attachment
             </span>

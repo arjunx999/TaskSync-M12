@@ -75,7 +75,7 @@ const ChatHome = () => {
         }
       );
       setRecentChats(res.data);
-      console.log(res.data);
+      // console.log(res.data);
     };
     const interval = setInterval(fetchRecentChats, 2000);
     fetchRecentChats();

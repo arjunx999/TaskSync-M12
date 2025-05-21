@@ -11,7 +11,7 @@ const router = express.Router();
 router.post(
   "/send",
   verifyToken,
-  upload.single("messageFile"),
+  upload.single("attachment"),
   sendDirectMessage
 );
 
