@@ -8,7 +8,7 @@ import TaskHome from "./pages/TaskHome.jsx"
 
 const App = () => {
   return (
-    <div>
+    <div className='text-black'>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/sign-up" element={<SignUp />} />

@@ -50,21 +50,21 @@ app.use("/groups", groupRoutes);
 const onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-  console.log("new client connected ", socket.id);
+  // console.log("new client connected ", socket.id);
 
   // Assign users a socket id when they connect
   socket.on("user-connected", (userId) => {
     onlineUsers.set(userId, socket.id);
-    console.log("User Connected:", userId);
+    // console.log("User Connected:", userId);
   });
 
   // Handle Disconnection
   socket.on("disconnect", () => {
-    console.log("client disconnected", socket.id);
+    // console.log("client disconnected", socket.id);
     for (const [userId, sockId] of onlineUsers.entries()) {
       if (sockId === socket.id) {
         onlineUsers.delete(userId);
-        console.log("User Disconnected:", userId);
+        // console.log("User Disconnected:", userId);
         break;
       }
     }

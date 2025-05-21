@@ -15,6 +15,6 @@ router.post(
   sendDirectMessage
 );
 
-router.get("/getMessages/:id", verifyToken, getDirectMessages);
+router.get("/getMessages/:otherUserId", verifyToken, getDirectMessages);
 
 export default router;

@@ -5,6 +5,7 @@ import logo from "../assets/logo.svg";
 import { useState } from "react";
 import axios from "axios";
 import ChatBox from "../components/ChatBox";
+import socket from "../socket";
 
 const ChatHome = () => {
   const Navigate = useNavigate();
@@ -17,6 +18,10 @@ const ChatHome = () => {
       setTimeout(() => {
         Navigate("/");
       }, 500);
+    }
+
+    if(user?._id) {
+      socket.emit("join", user)
     }
     // console.log(user.profilePic)
 

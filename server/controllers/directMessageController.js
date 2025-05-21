@@ -32,7 +32,7 @@ export const getDirectMessages = async (req, res) => {
         { sender: userId, receiver: otherUserId },
         { sender: otherUserId, receiver: userId },
       ],
-    }).sort({ createdAt: 1 });
+    }).sort({ timestamp: 1 });
 
     res.status(200).json(messages);
   } catch (err) {
