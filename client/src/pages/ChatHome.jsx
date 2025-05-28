@@ -88,13 +88,13 @@ const ChatHome = () => {
       <div className="w-[5%] h-full bg-zinc-100 border-r-[0.1rem] flex flex-col">
         <div className="w-fill h-[50%] flex flex-col pt-[1.5vh]">
           <div className="w-full h-[10vh] flex justify-center items-center relative group">
-            <i className="ri-chat-1-line text-xl px-3 py-2 rounded-full bg--300 border-[0.1rem] cursor-pointer bg-[#F5F7FA]"></i>
+            <i className="ri-chat-1-line text-xl px-3 py-2 rounded-full bg--300 border-[0.1rem] cursor-pointer bg-[#F5F7FA]" onClick={() => Navigate("/home")}></i>
             <span className="absolute left-1/2 -translate-x-1/2 translate-y-5.5 mt-1.5 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
               Chats
             </span>
           </div>
-          <div className="w-full h-[10vh] bg--300 flex justify-center items-center relative group ">
-            <i className="ri-list-check-3 text-xl px-3 py-2 rounded-full bg--300 border-[0.1rem]  cursor-pointer bg-[#F5F7FA]"></i>
+          <div className="w-full h-[10vh] bg--300 flex justify-center items-center relative group " onClick={() => Navigate("/tasks")}>
+            <i className="ri-list-check-3 text-xl px-3 py-2 rounded-full bg--300 border-[0.1rem]  cursor-pointer bg-[#F5F7FA]" onClick={() => Navigate("/tasks")}></i>
             <span className="absolute left-1/2 -translate-x-1/2 translate-y-5.5 mt-1.5 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
               Tasks
             </span>

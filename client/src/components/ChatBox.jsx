@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import socket from "../socket";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ChatBox = ({ selectedUser, user }) => {
   const serverUrl = "http://localhost:9999";
@@ -116,6 +117,8 @@ const ChatBox = ({ selectedUser, user }) => {
   //   }
   // }
 
+  const Navigate = useNavigate()
+
   return (
     <div className="w-full h-full bg-[#F5F7FA] relative flex flex-col font-['Fredoka']">
       <div className="w-full h-[10%] bg- border-b-[0.1rem] flex items-center justify-between gap-[1vw] text-xl font-semibold px-[2vw] select-none">
@@ -183,8 +186,17 @@ const ChatBox = ({ selectedUser, user }) => {
               <div className="chat-header select-none">
                 {isSender ? user.name : selectedUser.name}
               </div>
-              <div className="chat-bubble min-h-[2vh] h-auto max-w-[45%] break-words overflow-wrap break-word overflowhidden">
+              <div className="group chat-bubble min-h-[2vh] h-auto max-w-[45%] break-words overflow-wrap break-word overflowhidden relative">
                 {msg.content}
+                <i
+                  className={`ri-task-line cursor-pointer text-zinc-900 font-medium text-xl top-1.5 absolute ${
+                    isSender ? "-left-7" : "-right-7"
+                  } opacity-0 group-hover:opacity-100 transition-opacity duration-100`}
+                  onClick={() => {
+                    localStorage.setItem("task_head", msg.content)
+                    Navigate("/tasks")
+                  }}
+                ></i>
               </div>
             </div>
           );
