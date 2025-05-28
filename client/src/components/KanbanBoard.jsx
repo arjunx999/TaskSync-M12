@@ -14,10 +14,41 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import confetti from "canvas-confetti";
+
+const handleComplete = () => {
+  const end = Date.now() + 1.5 * 1000;
+  const colors = ["#a786ff", "#fd8bbc", "#eca184", "#ffe166"];
+
+  const frame = () => {
+    if (Date.now() > end) return;
+
+    confetti({
+      particleCount: 2,
+      angle: 60,
+      spread: 55,
+      startVelocity: 60,
+      origin: { x: 0, y: 0.5 },
+      colors: colors,
+    });
+    confetti({
+      particleCount: 2,
+      angle: 120,
+      spread: 55,
+      startVelocity: 60,
+      origin: { x: 1, y: 0.5 },
+      colors: colors,
+    });
+
+    requestAnimationFrame(frame);
+  };
+
+  frame();
+};
 
 const columns = {
   todo: {
-    name: "Todo",
+    name: "To-do",
     items: [
       { id: "1", content: "Learn DnD Kit" },
       {
@@ -28,7 +59,7 @@ const columns = {
     ],
   },
   progress: {
-    name: "Progress",
+    name: "In-Progress",
     items: [{ id: "2", content: "demo task is goood" }],
   },
   completed: {
@@ -52,7 +83,7 @@ function SortableItem({ id, content }) {
       {...attributes}
       {...listeners}
       style={style}
-      className="bg-zinc-100 shadow-lg p-4 mb-2 rounded cursor-pointer h-[20vh] overflow-hidden"
+      className="bg-white shadow-md border-[0.1rem] shadow-zinc-400 p-4 mb-2 rounded-xl cursor-pointer h-[20vh] overflow-hidden"
     >
       {content}
     </div>
@@ -116,6 +147,15 @@ export default function KanbanBoard() {
     });
 
     setActiveCard(null);
+
+    if (toColumnId === "completed") {
+      handleComplete();
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 },
+      });
+    }
   }
 
   return (
@@ -128,7 +168,7 @@ export default function KanbanBoard() {
       >
         {Object.entries(tasks).map(([columnId, column]) => (
           <div key={columnId} className="w-[32.3%] max-w-sm">
-            <h2 className="text-lg text-left font-medium font-['Fredoka'] ml-5">
+            <h2 className="text-lg text-left font-['Fredoka'] ml-5 font-semibold">
               {column.name}
             </h2>
             <SortableContext
@@ -150,7 +190,7 @@ export default function KanbanBoard() {
 
         <DragOverlay>
           {activeCard ? (
-            <div className="bg-white shadow-md h-[20vh] overflow-hidden p-4 mb-2 rounded cursor-move">
+            <div className="bg-white border-[0.1rem] shadow-xl h-[20vh] overflow-hidden p-4 mb-2 rounded-xl cursor-move">
               {activeCard.content}
             </div>
           ) : null}

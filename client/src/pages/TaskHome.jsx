@@ -88,7 +88,7 @@ const TaskHome = () => {
         </div>
       </div>
       {/* Right-Half */}
-      <div className="w-[95%] h-full bg-zinc-100 flex justify-center items-center gap-[2.5vw] ">
+      <div className="w-[95%] h-full bg--100 flex justify-center items-center gap-[2.5vw] ">
         {/* Kanban Board */}
         <div className="w-[66%] h-[90%] bg-white overflow-hidden  rounded-3xl border-[0.1rem] flex flex-col">
           <div className="w-full h-[10%] bg-white flex justify-between border-b-[0.1rem] select-none">
@@ -114,12 +114,29 @@ const TaskHome = () => {
               </button>
             </div>
           </div>
-          <div className="w-full h-[90%] bg--900">
+          <div className="w-full h-[90%] bg-zinc-100">
             <KanbanBoard />
           </div>
         </div>
         {/* Progress Graph */}
-        <div className="w-[25.5%] h-[90%] bg-white overflow-hidden rounded-3xl border-[0.1rem]"></div>
+        <div className="w-[25.5%] h-[90%] bg-white overflow-hidden rounded-3xl border-[0.1rem] flex flex-col">
+          <div className="w-full h-[60%] bg-red-300 border-b-[0.1rem]"></div>
+          <div className="w-full pt-1 h-[40%] bg--300">
+            <h1 className="text-xl font-['Fredoka'] font-semibold ml-[5%]">
+              Tasks :
+            </h1>
+            <div className="w-full h-[88%] bg--300 flex items-center justify-center p-1">
+              <div className="w-[50%] h-full bg-300 flex flex-col items-center justify-center gap-y-[5%]">
+                <div className="w-[87%] h-[40%] bg--300 rounded-xl border-[0.1rem]"></div>
+                <div className="w-[87%] h-[40%] bg--300 rounded-xl border-[0.1rem]"></div>
+              </div>
+              <div className="w-[50%] h-full bg--300 flex flex-col items-center justify-center gap-y-[5%]">
+                <div className="w-[87%] h-[40%] bg--300 rounded-xl border-[0.1rem]"></div>
+                <div className="w-[87%] h-[40%] bg--300 rounded-xl border-[0.1rem]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
