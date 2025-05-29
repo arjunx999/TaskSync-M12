@@ -2,16 +2,17 @@ import { Task } from "../models/task.js";
 
 export const createTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, dueDate } = req.body;
     const creator = req.user.id;
 
-    if (!title || !description) {
+    if (!title || !description || !dueDate) {
       return res.status(400).json({ message: "Incomplete details" });
     }
 
     const newTask = new Task({
       title,
       description,
+      dueDate,
       createdBy: creator,
     });
 

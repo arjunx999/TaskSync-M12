@@ -4,6 +4,7 @@ import { useAppContext } from "../context/UserContext";
 import { useState, useEffect } from "react";
 import logo from "../assets/logo.svg";
 import KanbanBoard from "../components/KanbanBoard";
+import axios from "axios";
 
 const TaskHome = () => {
   // console.log(localStorage.getItem("task_head"))
@@ -13,12 +14,44 @@ const TaskHome = () => {
   const [ShowPfp, setShowPfp] = useState(false);
   const serverUrl = "http://localhost:9999";
   const [taskCreation, setTaskCreation] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    dueDate: "",
+  });
+  const token = sessionStorage.getItem("token");
 
   const handleLogout = () => {
     const isConfirmed = window.confirm("Are you sure you want to log out?");
     if (isConfirmed) {
       sessionStorage.clear();
       Navigate("/");
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(
+        `http://localhost:9999/tasks/create`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log(res.data);
+      setFormData({ title: "", description: "", dueDate: "" });
+      setTaskCreation(false);
+    } catch (err) {
+      alert("Server error");
+      console.error(err);
     }
   };
 
@@ -94,7 +127,10 @@ const TaskHome = () => {
         <div className="w-[66%] h-[90%] z-0 rounded-3xl border-[0.1rem] flex flex-col">
           {taskCreation ? (
             // Task creator
-            <form className="w-full h-full bg-white rounded-3xl flex px-[2vw] pt-[2vw] relative">
+            <form
+              className="w-full h-full bg-white rounded-3xl flex px-[2vw] pt-[2vw] relative"
+              onSubmit={handleSubmit}
+            >
               <div className="w-full flex flex-col mt-[0.8vw] font-['Fredoka'] gap-y-[0.8vw] bg--400">
                 <div className="flex w-full h-20 bg--300 gap-[3%]">
                   <div className="w-[72%]">
@@ -104,8 +140,9 @@ const TaskHome = () => {
                       placeholder="task name"
                       required
                       className="w-[100%] h-[6vh] rounded-xl p-2 border-[1.4px] border-zinc-800 bg-zinc-100  font-fredoka"
-                      name="email"
-                      // onChange={handleInputChange}
+                      name="title"
+                      onChange={handleInputChange}
+                      value={formData.title}
                     />
                   </div>
 
@@ -116,8 +153,9 @@ const TaskHome = () => {
                       placeholder="email"
                       required
                       className="w-[100%] h-[6vh] rounded-xl p-3 border-[1.4px] border-zinc-800 bg-zinc-100  font-fredoka"
-                      name="email"
-                      // onChange={handleInputChange}
+                      name="dueDate"
+                      onChange={handleInputChange}
+                      value={formData.dueDate}
                       min={new Date().toISOString().split("T")[0]}
                     />
                   </div>
@@ -133,8 +171,9 @@ const TaskHome = () => {
                 [-ms-overflow-style:none] 
                 [&::-webkit-scrollbar]:w-0 
                 [&::-webkit-scrollbar]:bg-transparent font-fredoka"
-                    name="email"
-                    // onChange={handleInputChange}
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
                   />
                 </div>
                 {/* button */}
