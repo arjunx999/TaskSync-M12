@@ -193,7 +193,7 @@ const ChatBox = ({ selectedUser, user }) => {
                     isSender ? "-left-7" : "-right-7"
                   } opacity-0 group-hover:opacity-100 transition-opacity duration-100`}
                   onClick={() => {
-                    localStorage.setItem("task_head", msg.content)
+                    sessionStorage.setItem("task_head", msg.content)
                     Navigate("/tasks")
                   }}
                 ></i>

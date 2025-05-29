@@ -55,6 +55,21 @@ const TaskHome = () => {
     }
   };
 
+  useEffect(() => {
+    const heading = sessionStorage.getItem("task_head");
+    if (heading) {
+      setFormData({
+        title: heading,
+        description: "",
+        dueDate: "",
+        assignee: "",
+        priority: "",
+      });
+      sessionStorage.removeItem("task_head");
+      setTaskCreation(true);
+    }
+  });
+
   return (
     <div className="w-[100vw] h-[100vh] overflow-hidden bg-[#F5F7FA] flex">
       {/* Pfp Display */}
