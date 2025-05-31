@@ -17,6 +17,7 @@ Freelancers often juggle multiple apps—one for chatting with clients, another 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Usage](#usage)
+- [Try it live](#try-it-live)
   
 ---
 
@@ -62,3 +63,6 @@ Freelancers often juggle multiple apps—one for chatting with clients, another 
   - Upload and share files relevant to tasks or conversations.
 
 ---
+
+# Try it live:
+https://tasksync-m12-client.onrender.com/
