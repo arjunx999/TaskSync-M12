@@ -62,8 +62,6 @@ const TaskHome = () => {
         title: heading,
         description: "",
         dueDate: "",
-        assignee: "",
-        priority: "",
       });
       sessionStorage.removeItem("task_head");
       setTaskCreation(true);
@@ -139,7 +137,7 @@ const TaskHome = () => {
       {/* Right-Half */}
       <div className="w-[95%] h-full bg--100 flex justify-center items-center gap-[2.5vw] ">
         {/* Kanban Board */}
-        <div className="w-[66%] h-[90%] z-0 rounded-3xl border-[0.1rem] flex flex-col">
+        <div className="w-[66%] h-[90%] z-0 bg-zinc-100 rounded-3xl border-[0.1rem] flex flex-col">
           {taskCreation ? (
             // Task creator
             <form
@@ -208,7 +206,14 @@ const TaskHome = () => {
 
               <div
                 className="w-[3.7vw] h-[3.7vw] bg-red-400 cursor-pointer rounded-full absolute -right-4 -top-4 flex items-center justify-center border-[0.1rem] border-black hover:shadow-md"
-                onClick={() => setTaskCreation(false)}
+                onClick={() => {
+                  setTaskCreation(false);
+                  setFormData({
+                    title: "",
+                    description: "",
+                    dueDate: "",
+                  });
+                }}
               >
                 <i className="ri-close-fill font-bold text-2xl"></i>
               </div>

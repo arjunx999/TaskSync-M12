@@ -63,7 +63,7 @@ export const getTaskById = async (req, res) => {
 
 export const getUserTasks = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.params.userId;
     const tasks = await Task.find({ createdBy: userId });
 
     if (tasks.length === 0) {

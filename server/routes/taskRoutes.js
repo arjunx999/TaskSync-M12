@@ -16,7 +16,7 @@ router.patch("/update", verifyToken, updateTask);
 
 router.get("/:id", verifyToken, getTaskById);
 
-router.get("/user/:id", verifyToken, getUserTasks);
+router.get("/user/:userId", verifyToken, getUserTasks);
 
 router.delete("/:id", verifyToken, deleteTask);
 
