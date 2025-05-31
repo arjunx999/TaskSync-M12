@@ -18,7 +18,18 @@ import confetti from "canvas-confetti";
 import axios from "axios";
 import { useAppContext } from "../context/UserContext";
 
-// Confetti handler for completion
+// Column mapping for status
+const COLUMN_MAP = {
+  "To Do": "todo",
+  "In Progress": "progress",
+  Completed: "completed",
+};
+const COLUMN_DISPLAY = {
+  todo: "To Do",
+  progress: "In Progress",
+  completed: "Completed",
+};
+
 const handleComplete = () => {
   const end = Date.now() + 1.5 * 1000;
   const colors = ["#a786ff", "#fd8bbc", "#eca184", "#ffe166"];
@@ -45,37 +56,10 @@ const handleComplete = () => {
   frame();
 };
 
-const columns = {
-  todo: {
-    name: "To-do",
-    items: [
-      { id: "1", content: "Redesign a Landing Page for a Mobile App" },
-      {
-        id: "4",
-        content:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus, est reiciendis commodi nulla alias dolorum harum neque molestias iusto fugit m dolor sit amet consectetur adipisicing elit. Necessitatibus, est reiciendis commodi nulla alias dolorum harum neque molestias iusto fugit!",
-      },
-    ],
-  },
-  progress: {
-    name: "In-Progress",
-    items: [{ id: "2", content: "demo task is goood" }],
-  },
-  completed: {
-    name: "Completed",
-    items: [],
-  },
-};
-
 // Task Detail View
 function TaskDetail({ task, onBack }) {
   return (
-    <div
-      className="w-full h-[77vh] overflow-scroll overflow-x-hidden p-2 rounded-xl bg--100 [scrollbar-width:none] 
-                [-ms-overflow-style:none] 
-                [&::-webkit-scrollbar]:w-0 
-                [&::-webkit-scrollbar]:bg-transparent"
-    >
+    <div className="w-full h-[77vh] overflow-scroll overflow-x-hidden p-2 rounded-xl bg--100 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:bg-transparent">
       <button
         onClick={onBack}
         className="mb-4 flex items-center gap-2 text-purple-600 hover:text-purple-800 cursor-pointer justify-center"
@@ -85,12 +69,17 @@ function TaskDetail({ task, onBack }) {
       </button>
       <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-4 font-['Fredoka']">
-          {task.content}
+          {task.title}
         </h1>
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <i className="ri-calendar-todo-line text-xl text-red-500"></i>
-            <span className="text-lg">Due Date: 28-06-2025</span>
+            <span className="text-lg">
+              Due Date:{" "}
+              {task.dueDate
+                ? new Date(task.dueDate).toLocaleDateString()
+                : "N/A"}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <i className="ri-information-line text-xl text-blue-500"></i>
@@ -98,7 +87,7 @@ function TaskDetail({ task, onBack }) {
           </div>
           <div className="mt-6 p-4 bg-gray-50 rounded-lg h-48 overflow-y-auto">
             <h2 className="text-xl font-semibold mb-2">Full Description :</h2>
-            <p className="text-gray-700 leading-relaxed">{task.content}</p>
+            <p className="text-gray-700 leading-relaxed">{task.description}</p>
           </div>
         </div>
       </div>
@@ -107,15 +96,16 @@ function TaskDetail({ task, onBack }) {
 }
 
 // Sortable Task Card
-function SortableItem({ id, content, onInfoClick }) {
+function SortableItem({ id, title, dueDate, onInfoClick }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
-
+  const isOverdue =
+    dueDate &&
+    new Date(dueDate).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0);
   return (
     <div className="relative mb-2">
       <div
@@ -127,22 +117,32 @@ function SortableItem({ id, content, onInfoClick }) {
       >
         <div className="w-full h-[70%] bg--300 p-3 leading-5 ">
           <h1 className="font-['Fredoka']">
-            {content.length > 82 ? (
+            {title.length > 82 ? (
               <>
-                {content.slice(0, 82)}
+                {title.slice(0, 82)}
                 <span className="text-blue-500 font-black">....</span>
               </>
             ) : (
-              content
+              title
             )}
           </h1>
         </div>
         <div className="w-full h-[30%] bg-lime-200 flex font-['Fredoka'] items-center justify-start pl-3 gap-x-2 border-t-[0.1rem]">
-          <i className="ri-calendar-todo-line text-xl text-red-500"></i>
-          <h1 className="font-medium">28-06-2025</h1>
+          <i
+            className={
+              "ri-calendar-todo-line text-xl " +
+              (isOverdue ? "text-red-500" : "text-zinc-900")
+            }
+          ></i>
+          <h1
+            className={
+              "font-medium" + (isOverdue ? " text-red-500 font-semibold" : "")
+            }
+          >
+            {dueDate ? new Date(dueDate).toLocaleDateString() : "No Due Date"}
+          </h1>
         </div>
       </div>
-      {/* Info Icon (not inside draggable area) */}
       <div
         className="w-[2.7vw] h-[2.7vw] bg-blue-200 cursor-pointer rounded-full absolute -right-2 -top-2 flex items-center justify-center border-[0.1rem] border-black hover:shadow-lg z-20"
         onClick={(e) => {
@@ -156,7 +156,6 @@ function SortableItem({ id, content, onInfoClick }) {
   );
 }
 
-// Droppable Column
 function DroppableColumn({ id, children }) {
   const { setNodeRef } = useDroppable({ id });
   return (
@@ -169,63 +168,103 @@ function DroppableColumn({ id, children }) {
   );
 }
 
-// Main KanbanBoard Component
 export default function KanbanBoard() {
-  const [tasks, setTasks] = useState(columns);
+  const [tasksByColumn, setTasksByColumn] = useState({
+    todo: [],
+    progress: [],
+    completed: [],
+  });
   const [activeCard, setActiveCard] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  // dnd-kit sensor with activation constraint for click/drag distinction
+  const { user } = useAppContext();
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
     })
   );
 
-  // Handler for info icon click
-  const handleInfoClick = (task, columnId) => {
-    setSelectedTask({
-      ...task,
-      status: tasks[columnId].name,
-    });
+  // Fetch tasks and map to columns by status
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    const fetchUserTasks = async () => {
+      const res = await axios.get(
+        `http://localhost:9999/tasks/user/${user._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const columns = { todo: [], progress: [], completed: [] };
+      for (const task of res.data) {
+        const key = COLUMN_MAP[task.status] || "todo";
+        columns[key].push(task);
+      }
+      setTasksByColumn(columns);
+    };
+    fetchUserTasks();
+  }, [user._id]);
+
+  const handleInfoClick = (task) => {
+    setSelectedTask(task);
   };
 
   function handleDragStart(event) {
     const { active } = event;
-    const card = Object.values(tasks)
-      .flatMap((col) => col.items)
-      .find((item) => item.id === active.id);
+    const card = Object.values(tasksByColumn)
+      .flatMap((col) => col)
+      .find((item) => item._id === active.id);
     setActiveCard(card);
   }
 
-  function handleDragEnd(event) {
+  async function handleDragEnd(event) {
     const { active, over } = event;
     if (!over) return;
     if (active.id === over.id) return;
 
-    const fromColumnId = Object.keys(tasks).find((colId) =>
-      tasks[colId].items.some((item) => item.id === active.id)
+    const fromColumnId = Object.keys(tasksByColumn).find((colId) =>
+      tasksByColumn[colId].some((item) => item._id === active.id)
     );
     const toColumnId =
-      over.id in tasks
+      over.id in tasksByColumn
         ? over.id
-        : Object.keys(tasks).find((colId) =>
-            tasks[colId].items.some((item) => item.id === over.id)
+        : Object.keys(tasksByColumn).find((colId) =>
+            tasksByColumn[colId].some((item) => item._id === over.id)
           );
 
     if (!fromColumnId || !toColumnId || fromColumnId === toColumnId) return;
 
-    const fromItems = [...tasks[fromColumnId].items];
-    const toItems = [...tasks[toColumnId].items];
-    const movingItem = fromItems.find((item) => item.id === active.id);
+    const fromItems = [...tasksByColumn[fromColumnId]];
+    const toItems = [...tasksByColumn[toColumnId]];
+    const movingItem = fromItems.find((item) => item._id === active.id);
 
-    const newFromItems = fromItems.filter((item) => item.id !== active.id);
-    const newToItems = [...toItems, movingItem];
+    // Backend status update
+    try {
+      const token = sessionStorage.getItem("token");
+      await axios.patch(
+        "http://localhost:9999/tasks/update",
+        {
+          taskId: movingItem._id,
+          currentStatus: COLUMN_DISPLAY[toColumnId],
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      alert("Failed to update task status!");
+      return;
+    }
 
-    setTasks({
-      ...tasks,
-      [fromColumnId]: { ...tasks[fromColumnId], items: newFromItems },
-      [toColumnId]: { ...tasks[toColumnId], items: newToItems },
+    // Update frontend state
+    const newFromItems = fromItems.filter((item) => item._id !== active.id);
+    const newToItems = [
+      ...toItems,
+      { ...movingItem, status: COLUMN_DISPLAY[toColumnId] },
+    ];
+
+    setTasksByColumn({
+      ...tasksByColumn,
+      [fromColumnId]: newFromItems,
+      [toColumnId]: newToItems,
     });
 
     setActiveCard(null);
@@ -240,21 +279,6 @@ export default function KanbanBoard() {
     }
   }
 
-  const { user } = useAppContext();
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    const fetchUserTasks = async () => {
-      const res = await axios.get(
-        `http://localhost:9999/tasks/user/${user._id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      console.log(res.data);
-    };
-    fetchUserTasks();
-  }, []);
-
   return (
     <div className="flex gap-3 pt-3 px-3 w-full h-full">
       {selectedTask ? (
@@ -266,24 +290,36 @@ export default function KanbanBoard() {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          {Object.entries(tasks).map(([columnId, column]) => (
+          {Object.entries(tasksByColumn).map(([columnId, items]) => (
             <div key={columnId} className="w-[32.3%] max-w-sm">
               <h2 className="text-lg text-left font-['Fredoka'] ml-5 font-semibold">
-                {column.name}
+                {COLUMN_DISPLAY[columnId]}
               </h2>
               <SortableContext
-                items={column.items.map((item) => item.id)}
+                items={items.map((item) => item._id)}
                 strategy={verticalListSortingStrategy}
               >
                 <DroppableColumn id={columnId}>
-                  {column.items.map((item) => (
-                    <SortableItem
-                      key={item.id}
-                      id={item.id}
-                      content={item.content}
-                      onInfoClick={() => handleInfoClick(item, columnId)}
-                    />
-                  ))}
+                  {[...items]
+                    // Arranging tasks by due date closest
+                    .sort((a, b) => {
+                      const dateA = a.dueDate
+                        ? new Date(a.dueDate)
+                        : new Date(8640000000000000);
+                      const dateB = b.dueDate
+                        ? new Date(b.dueDate)
+                        : new Date(8640000000000000);
+                      return dateA - dateB;
+                    })
+                    .map((item) => (
+                      <SortableItem
+                        key={item._id}
+                        id={item._id}
+                        title={item.title}
+                        dueDate={item.dueDate}
+                        onInfoClick={() => handleInfoClick(item)}
+                      />
+                    ))}
                 </DroppableColumn>
               </SortableContext>
             </div>
