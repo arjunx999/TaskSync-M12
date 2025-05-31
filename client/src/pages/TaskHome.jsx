@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import logo from "../assets/logo.svg";
 import KanbanBoard from "../components/KanbanBoard";
 import axios from "axios";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 const TaskHome = () => {
   // console.log(localStorage.getItem("task_head"))
@@ -20,6 +22,17 @@ const TaskHome = () => {
     dueDate: "",
   });
   const token = sessionStorage.getItem("token");
+  const [tasks, setTasks] = useState([]);
+  const totalTasks = tasks.length;
+  const todoTasks = tasks.filter((task) => task.status === "To Do").length;
+  const inProgressTasks = tasks.filter(
+    (task) => task.status === "In Progress"
+  ).length;
+  const completedTasks = tasks.filter(
+    (task) => task.status === "Completed"
+  ).length;
+  const progressPercent =
+    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
   const handleLogout = () => {
     const isConfirmed = window.confirm("Are you sure you want to log out?");
@@ -49,10 +62,22 @@ const TaskHome = () => {
       // console.log(res.data);
       setFormData({ title: "", description: "", dueDate: "" });
       setTaskCreation(false);
+      await fetchUserTasks();
     } catch (err) {
       alert("Server error");
       console.error(err);
     }
+  };
+
+  const fetchUserTasks = async () => {
+    const token = sessionStorage.getItem("token");
+    const res = await axios.get(
+      `http://localhost:9999/tasks/user/${user._id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    setTasks(res.data);
   };
 
   useEffect(() => {
@@ -66,7 +91,8 @@ const TaskHome = () => {
       sessionStorage.removeItem("task_head");
       setTaskCreation(true);
     }
-  });
+    fetchUserTasks();
+  }, [user._id]);
 
   return (
     <div className="w-[100vw] h-[100vh] overflow-hidden bg-[#F5F7FA] flex">
@@ -245,7 +271,7 @@ const TaskHome = () => {
                 </div>
               </div>
               <div className="w-full h-[90%] bg-zinc-100">
-                <KanbanBoard />
+                <KanbanBoard tasks={tasks} refetchTasks={fetchUserTasks} />
               </div>
             </div>
           )}
@@ -253,7 +279,25 @@ const TaskHome = () => {
         {/* Progress Graph */}
         <div className="w-[25.5%] h-[90%] bg-white overflow-hidden rounded-3xl border-[0.1rem] flex flex-col">
           <div className="w-full h-[60%] bg--300 flex items-center justify-center border-b-[0.1rem]">
-            <div className="w-[30vh] h-[30vh] rounded-full bg-red-200"></div>
+            <div className="flex flex-col items-center justify-center w-full">
+              <div className="w-45 h-45">
+                <CircularProgressbar
+                  value={progressPercent}
+                  text={`${progressPercent}%`}
+                  styles={buildStyles({
+                    pathColor: "#fc9003",
+                    textColor: "#fc9003",
+                    trailColor: "#ffe6c7",
+                    backgroundColor: "#fff",
+                    textSize: "1.5rem",
+                    pathTransitionDuration: 0.5,
+                  })}
+                />
+              </div>
+              <span className="text-lg font-semibold text-gray-700 mt-2">
+                Progress
+              </span>
+            </div>
           </div>
           <div className="w-full pt-1 h-[40%] bg--300">
             <h1 className="text-xl font-['Fredoka'] font-semibold ml-[5%] underline underline-offset-3">
@@ -265,14 +309,14 @@ const TaskHome = () => {
                   <div className="w-[6px] rounded-xl h-[62%] bg-blue-500"></div>
                   <div className="flex flex-col ml-1.5 ">
                     <h1 className="text-lg font-semibold">Total :</h1>
-                    <h2 className="text-lg -mt-1">112</h2>
+                    <h2 className="text-lg -mt-1">{totalTasks}</h2>
                   </div>
                 </div>
                 <div className="w-[87%] h-[40%] bg-orange-100 items-center pl-3 rounded-xl flex border-[0.1rem]">
                   <div className="w-[6px] rounded-xl h-[62%] bg-orange-500"></div>
                   <div className="flex flex-col ml-1.5 ">
                     <h1 className="text-lg font-semibold">To-do :</h1>
-                    <h2 className="text-lg -mt-1">69</h2>
+                    <h2 className="text-lg -mt-1">{todoTasks}</h2>
                   </div>
                 </div>
               </div>
@@ -281,14 +325,14 @@ const TaskHome = () => {
                   <div className="w-[6px] rounded-xl h-[62%] bg-pink-500"></div>
                   <div className="flex flex-col ml-1.5 ">
                     <h1 className="text-lg font-semibold">Completed :</h1>
-                    <h2 className="text-lg -mt-1">77</h2>
+                    <h2 className="text-lg -mt-1">{completedTasks}</h2>
                   </div>
                 </div>
                 <div className="w-[87%] h-[40%] bg-purple-100 items-center pl-3 rounded-xl flex border-[0.1rem]">
                   <div className="w-[6px] rounded-xl h-[62%] bg-purple-500"></div>
                   <div className="flex flex-col ml-1.5 ">
                     <h1 className="text-lg font-semibold">In-Prog :</h1>
-                    <h2 className="text-lg -mt-1">22</h2>
+                    <h2 className="text-lg -mt-1">{inProgressTasks}</h2>
                   </div>
                 </div>
               </div>

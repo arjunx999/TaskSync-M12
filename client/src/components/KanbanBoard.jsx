@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
   DndContext,
   closestCenter,
@@ -18,7 +18,6 @@ import confetti from "canvas-confetti";
 import axios from "axios";
 import { useAppContext } from "../context/UserContext";
 
-// Column mapping for status
 const COLUMN_MAP = {
   "To Do": "todo",
   "In Progress": "progress",
@@ -114,7 +113,7 @@ function TaskDetail({ task, onBack, refetchTasks }) {
             <i className="ri-information-line text-xl text-blue-500"></i>
             <span className="text-lg">Status: {task.status}</span>
           </div>
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg h-48 overflow-y-auto">
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg h-40 overflow-y-auto">
             <h2 className="text-xl font-semibold mb-2">Full Description :</h2>
             <p className="text-gray-700 leading-relaxed">{task.description}</p>
           </div>
@@ -205,42 +204,25 @@ function DroppableColumn({ id, children }) {
   );
 }
 
-export default function KanbanBoard() {
-  const [tasksByColumn, setTasksByColumn] = useState({
-    todo: [],
-    progress: [],
-    completed: [],
-  });
+export default function KanbanBoard({ tasks, refetchTasks }) {
   const [activeCard, setActiveCard] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const { user } = useAppContext();
+  // Memoize columns so they update when tasks change
+  const tasksByColumn = useMemo(() => {
+    const columns = { todo: [], progress: [], completed: [] };
+    for (const task of tasks) {
+      const key = COLUMN_MAP[task.status] || "todo";
+      columns[key].push(task);
+    }
+    return columns;
+  }, [tasks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 },
     })
   );
-
-  const fetchUserTasks = async () => {
-    const token = sessionStorage.getItem("token");
-    const res = await axios.get(
-      `http://localhost:9999/tasks/user/${user._id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const columns = { todo: [], progress: [], completed: [] };
-    for (const task of res.data) {
-      const key = COLUMN_MAP[task.status] || "todo";
-      columns[key].push(task);
-    }
-    setTasksByColumn(columns);
-  };
-
-  useEffect(() => {
-    fetchUserTasks();
-  }, [user._id]);
 
   const handleInfoClick = (task) => {
     setSelectedTask(task);
@@ -286,22 +268,11 @@ export default function KanbanBoard() {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      if (refetchTasks) await refetchTasks();
     } catch (err) {
       alert("Failed to update task status!");
       return;
     }
-
-    const newFromItems = fromItems.filter((item) => item._id !== active.id);
-    const newToItems = [
-      ...toItems,
-      { ...movingItem, status: COLUMN_DISPLAY[toColumnId] },
-    ];
-
-    setTasksByColumn({
-      ...tasksByColumn,
-      [fromColumnId]: newFromItems,
-      [toColumnId]: newToItems,
-    });
 
     setActiveCard(null);
 
@@ -321,7 +292,7 @@ export default function KanbanBoard() {
         <TaskDetail
           task={selectedTask}
           onBack={() => setSelectedTask(null)}
-          refetchTasks={fetchUserTasks}
+          refetchTasks={refetchTasks}
         />
       ) : (
         <DndContext
@@ -342,7 +313,6 @@ export default function KanbanBoard() {
                 <DroppableColumn id={columnId}>
                   {[...items]
                     .sort((a, b) => {
-                      // Treat missing dueDate as far future
                       const dateA = a.dueDate
                         ? new Date(a.dueDate)
                         : new Date(8640000000000000);
