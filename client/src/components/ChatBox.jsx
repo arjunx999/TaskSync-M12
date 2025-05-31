@@ -5,7 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const ChatBox = ({ selectedUser, user }) => {
-  const serverUrl = "http://localhost:9999";
+  const serverUrl = "https://tasksync-m12.onrender.com";
 
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [ShowPfp, setShowPfp] = useState(false);
@@ -32,7 +32,7 @@ const ChatBox = ({ selectedUser, user }) => {
         if (!selectedUser?._id) return;
         const token = sessionStorage.getItem("token");
         const res = await axios.get(
-          `http://localhost:9999/directMessages/getMessages/${selectedUser._id}`,
+          `https://tasksync-m12.onrender.com/directMessages/getMessages/${selectedUser._id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -95,7 +95,7 @@ const ChatBox = ({ selectedUser, user }) => {
   //   const token = sessionStorage.getItem("token")
   //   try {
   //     const res = await axios.post(
-  //         "http://localhost:9999/directMessages/send",
+  //         "https://tasksync-m12.onrender.com/directMessages/send",
   //         formData,
   //         {
   //           headers: { Authorization: `Bearer ${token}` },

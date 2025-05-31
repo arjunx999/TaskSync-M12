@@ -14,7 +14,7 @@ const TaskHome = () => {
   const { user } = useAppContext();
   const Navigate = useNavigate();
   const [ShowPfp, setShowPfp] = useState(false);
-  const serverUrl = "http://localhost:9999";
+  const serverUrl = "https://tasksync-m12.onrender.com";
   const [taskCreation, setTaskCreation] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -52,7 +52,7 @@ const TaskHome = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:9999/tasks/create`,
+        `https://tasksync-m12.onrender.com/tasks/create`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -72,7 +72,7 @@ const TaskHome = () => {
   const fetchUserTasks = async () => {
     const token = sessionStorage.getItem("token");
     const res = await axios.get(
-      `http://localhost:9999/tasks/user/${user._id}`,
+      `https://tasksync-m12.onrender.com/tasks/user/${user._id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }

@@ -66,7 +66,7 @@ function TaskDetail({ task, onBack, refetchTasks }) {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
     try {
       const token = sessionStorage.getItem("token");
-      await axios.delete(`http://localhost:9999/tasks/${task._id}`, {
+      await axios.delete(`https://tasksync-m12.onrender.com/tasks/${task._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (refetchTasks) await refetchTasks();
@@ -261,7 +261,7 @@ export default function KanbanBoard({ tasks, refetchTasks }) {
     try {
       const token = sessionStorage.getItem("token");
       await axios.patch(
-        "http://localhost:9999/tasks/update",
+        "https://tasksync-m12.onrender.com/tasks/update",
         {
           taskId: movingItem._id,
           currentStatus: COLUMN_DISPLAY[toColumnId],

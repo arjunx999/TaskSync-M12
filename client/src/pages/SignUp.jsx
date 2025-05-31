@@ -53,7 +53,7 @@ const SignUp = () => {
     formData.append("profilePic", file);
 
     try {
-      const response = await fetch("http://localhost:9999/auth/signup", {
+      const response = await fetch("https://tasksync-m12.onrender.com/auth/signup", {
         method: "POST",
         body: formData,
       });

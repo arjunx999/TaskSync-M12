@@ -27,7 +27,7 @@ const ChatHome = () => {
 
     const token = sessionStorage.getItem("token");
     const fetchAllUsers = async () => {
-      const resUsers = await axios.get("http://localhost:9999/users/", {
+      const resUsers = await axios.get("https://tasksync-m12.onrender.com/users/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       // setAllUsers(resUsers.data);
@@ -58,7 +58,7 @@ const ChatHome = () => {
       )
     : [...allUsers].sort((a, b) => a.name.localeCompare(b.name));
 
-  const serverUrl = "http://localhost:9999";
+  const serverUrl = "https://tasksync-m12.onrender.com";
 
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [ShowPfp, setShowPfp] = useState(false);
@@ -69,7 +69,7 @@ const ChatHome = () => {
     const token = sessionStorage.getItem("token");
     const fetchRecentChats = async () => {
       const res = await axios.get(
-        `http://localhost:9999/users/getConversations/${user._id}`,
+        `https://tasksync-m12.onrender.com/users/getConversations/${user._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

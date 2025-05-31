@@ -32,7 +32,7 @@ const LogIn = () => {
     const { email, password } = logInInfo;
 
     try {
-      const response = await fetch("http://localhost:9999/auth/login", {
+      const response = await fetch("https://tasksync-m12.onrender.com/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
