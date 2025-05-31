@@ -26,7 +26,7 @@ export const getUserConversations = async (req, res) => {
 
     const messages = await DirectMessage.find({
       $or: [{ sender: userId }, { receiver: userId }],
-    }).populate("sender receiver", "name email profilePic");
+    }).populate("sender receiver", "name email profilePic username");
 
     // Extract unique user IDs
     const userMap = new Map();

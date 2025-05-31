@@ -78,16 +78,17 @@ export const getUserTasks = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
   try {
-    const { taskId } = req.params;
-
-    const task = await Task.findById(taskId);
+    const taskId = req.params.taskId;
+    // console.log(taskId)
+    const task = await Task.findByIdAndDelete(taskId);
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    await task.remove();
+    // await task.remove();
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: error.message });
   }
 };

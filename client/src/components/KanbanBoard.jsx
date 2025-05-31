@@ -57,7 +57,27 @@ const handleComplete = () => {
 };
 
 // Task Detail View
-function TaskDetail({ task, onBack }) {
+function TaskDetail({ task, onBack, refetchTasks }) {
+  const isOverdue =
+    task.dueDate &&
+    new Date(task.dueDate).setHours(0, 0, 0, 0) <
+      new Date().setHours(0, 0, 0, 0);
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
+    try {
+      const token = sessionStorage.getItem("token");
+      await axios.delete(`http://localhost:9999/tasks/${task._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (refetchTasks) await refetchTasks();
+      onBack();
+    } catch (err) {
+      alert("Failed to delete task!");
+      console.error(err);
+    }
+  };
+
   return (
     <div className="w-full h-[77vh] overflow-scroll overflow-x-hidden p-2 rounded-xl bg--100 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:bg-transparent">
       <button
@@ -73,8 +93,17 @@ function TaskDetail({ task, onBack }) {
         </h1>
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <i className="ri-calendar-todo-line text-xl text-red-500"></i>
-            <span className="text-lg">
+            <i
+              className={
+                "ri-calendar-todo-line text-xl " +
+                (isOverdue ? "text-red-500" : "text-zinc-900")
+              }
+            ></i>
+            <span
+              className={
+                "text-lg" + (isOverdue ? " text-red-600 font-semibold" : "")
+              }
+            >
               Due Date:{" "}
               {task.dueDate
                 ? new Date(task.dueDate).toLocaleDateString()
@@ -90,6 +119,13 @@ function TaskDetail({ task, onBack }) {
             <p className="text-gray-700 leading-relaxed">{task.description}</p>
           </div>
         </div>
+        <button
+          className="mt-8 px-5 py-2 bg-red-500 text-white font-semibold rounded hover:bg-red-600 flex items-center gap-2 transition"
+          onClick={handleDelete}
+        >
+          <i className="ri-delete-bin-line"></i>
+          Delete Task
+        </button>
       </div>
     </div>
   );
@@ -106,6 +142,7 @@ function SortableItem({ id, title, dueDate, onInfoClick }) {
   const isOverdue =
     dueDate &&
     new Date(dueDate).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0);
+
   return (
     <div className="relative mb-2">
       <div
@@ -185,23 +222,23 @@ export default function KanbanBoard() {
     })
   );
 
-  // Fetch tasks and map to columns by status
-  useEffect(() => {
+  const fetchUserTasks = async () => {
     const token = sessionStorage.getItem("token");
-    const fetchUserTasks = async () => {
-      const res = await axios.get(
-        `http://localhost:9999/tasks/user/${user._id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const columns = { todo: [], progress: [], completed: [] };
-      for (const task of res.data) {
-        const key = COLUMN_MAP[task.status] || "todo";
-        columns[key].push(task);
+    const res = await axios.get(
+      `http://localhost:9999/tasks/user/${user._id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-      setTasksByColumn(columns);
-    };
+    );
+    const columns = { todo: [], progress: [], completed: [] };
+    for (const task of res.data) {
+      const key = COLUMN_MAP[task.status] || "todo";
+      columns[key].push(task);
+    }
+    setTasksByColumn(columns);
+  };
+
+  useEffect(() => {
     fetchUserTasks();
   }, [user._id]);
 
@@ -254,7 +291,6 @@ export default function KanbanBoard() {
       return;
     }
 
-    // Update frontend state
     const newFromItems = fromItems.filter((item) => item._id !== active.id);
     const newToItems = [
       ...toItems,
@@ -282,7 +318,11 @@ export default function KanbanBoard() {
   return (
     <div className="flex gap-3 pt-3 px-3 w-full h-full">
       {selectedTask ? (
-        <TaskDetail task={selectedTask} onBack={() => setSelectedTask(null)} />
+        <TaskDetail
+          task={selectedTask}
+          onBack={() => setSelectedTask(null)}
+          refetchTasks={fetchUserTasks}
+        />
       ) : (
         <DndContext
           sensors={sensors}
@@ -301,8 +341,8 @@ export default function KanbanBoard() {
               >
                 <DroppableColumn id={columnId}>
                   {[...items]
-                    // Arranging tasks by due date closest
                     .sort((a, b) => {
+                      // Treat missing dueDate as far future
                       const dateA = a.dueDate
                         ? new Date(a.dueDate)
                         : new Date(8640000000000000);

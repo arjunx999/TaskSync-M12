@@ -46,7 +46,7 @@ const TaskHome = () => {
         }
       );
 
-      console.log(res.data);
+      // console.log(res.data);
       setFormData({ title: "", description: "", dueDate: "" });
       setTaskCreation(false);
     } catch (err) {

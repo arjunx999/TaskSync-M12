@@ -194,7 +194,7 @@ const ChatHome = () => {
                 [&::-webkit-scrollbar]:w-0 
                 [&::-webkit-scrollbar]:bg-transparent"
         >
-          {recentChats.map((chat, index) => {
+          {[...recentChats].reverse().map((chat, index) => {
             return (
               <div key={index}>
                 <div

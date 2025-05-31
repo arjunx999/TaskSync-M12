@@ -18,6 +18,6 @@ router.get("/:id", verifyToken, getTaskById);
 
 router.get("/user/:userId", verifyToken, getUserTasks);
 
-router.delete("/:id", verifyToken, deleteTask);
+router.delete("/:taskId", verifyToken, deleteTask);
 
 export default router;
